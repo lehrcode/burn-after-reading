@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Burn After Reading</title>
+    <link rel="stylesheet" href="webjars/bootstrap/css/bootstrap.min.css">
+    <script type="module">
+        async function createNote() {
+            const div = document.createElement('div');
+            const txa = document.querySelector('#txa-note');
+            const postResp = await fetch('api/v1/notes', {
+                method: 'POST',
+                body: txa.value,
+                headers: {'Content-Type': 'text/plain'}
+            });
+            if (postResp.status === 201) {
+                const key = await postResp.text();
+                div.className = 'alert alert-success';
+                div.innerHTML = `Link created: <a href="#${key}">${window.location.origin}${window.location.pathname}#${key}</a>`;
+                txa.value = '';
+            } else {
+                div.className = 'alert alert-danger';
+                div.innerText = `Error: ${postResp.status} ${postResp.statusText}`;
+            }
+            document.querySelectorAll('.alert').forEach((elem) => {
+                elem.remove()
+            });
+            document.querySelector("h1").after(div);
+        }
+
+        async function readAndDeleteNote(key) {
+            const div = document.createElement("div");
+            const deleteResp = await fetch(`api/v1/notes/${key}`, {method: 'DELETE'});
+            if (deleteResp.status === 200) {
+                document.querySelectorAll('.alert').forEach((elem) => {
+                    elem.remove()
+                });
+                div.className = 'alert alert-success';
+                div.innerHTML = 'Note deleted successfully!';
+                const txa = document.querySelector('#txa-note');
+                txa.value = await deleteResp.text();
+            } else {
+                div.className = 'alert alert-danger';
+                div.innerText = `Error: ${deleteResp.status} ${deleteResp.statusText}`;
+            }
+            document.querySelector("h1").after(div);
+        }
+
+        async function confirmReadNote(key) {
+            const div = document.createElement("div");
+            const headResp = await fetch(`api/v1/notes/${key}`, {method: 'HEAD'})
+            if (headResp.status === 410) {
+                div.className = 'alert alert-warning';
+                div.innerText = `Note with key ${key} does not exist!`;
+            } else if (headResp.status === 200) {
+                div.className = 'alert alert-primary';
+                const btn = document.createElement("button");
+                btn.innerText = 'Read note';
+                btn.addEventListener('click', async () => {
+                    await readAndDeleteNote(key)
+                });
+                btn.className = 'btn btn-primary';
+                const p = document.createElement('p');
+                p.innerText = 'Read und delete note?';
+                div.append(p, btn);
+            } else {
+                div.className = 'alert alert-danger';
+                div.innerText = `Error: ${headResp.status} ${headResp.statusText}`;
+            }
+            document.querySelector("h1").after(div);
+        }
+
+        if (window.location.hash) {
+            await confirmReadNote(window.location.hash.substring(1));
+        }
+        window.addEventListener("hashchange", async () => {
+            document.querySelectorAll('.alert').forEach((elem) => {
+                elem.remove()
+            });
+            if (window.location.hash) {
+                await confirmReadNote(window.location.hash.substring(1));
+            }
+        });
+        document.querySelector('form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await createNote();
+        });
+    </script>
+</head>
+<body>
+<main class="container mt-5 mb-5">
+    <h1 class="mb-4">Burn After Reading</h1>
+    <form>
+        <div class="mb-3">
+            <label for="txa-note" class="form-label">Text (password, secret, etc.):</label>
+            <textarea class="form-control" id="txa-note" rows="10"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Create note</button>
+    </form>
+</main>
+</body>
+</html>

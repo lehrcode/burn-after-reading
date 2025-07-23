@@ -18,6 +18,8 @@
     <properties>
         <java.version>21</java.version>
         <springdoc.version>2.8.9</springdoc.version>
+        <commons-lang3.version>3.18.0</commons-lang3.version>
+        <bootstrap.version>5.3.7</bootstrap.version>
     </properties>
 
     <dependencies>
@@ -54,6 +56,11 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>bootstrap</artifactId>
+            <version>${bootstrap.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
