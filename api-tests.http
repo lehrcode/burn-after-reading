@@ -1,0 +1,57 @@
+### Create note
+< {%
+    client.global.set('note_text', request.body.tryGetSubstituted());
+ %}
+POST {{base_url}}/api/v1/notes
+Content-Type: text/plain;charset=UTF-8
+
+Hallöchen
+
+> {%
+    client.test('Note created', function() {
+        client.assert(response.status === 201, `Expected response status 201 but got ${response.status}`);
+        const key = ''+response.body
+        client.assert(response.headers.valueOf('Location')?.endsWith(key), `Location header does not contain key`);
+        client.global.set('note_key', key);
+    });
+ %}
+
+### Peek note
+GET {{base_url}}/api/v1/notes/{{note_key}}
+
+> {%
+    client.test('Note retrieved', function() {
+        client.assert(response.status === 200, `Expected response status 200 but got ${response.status}`);
+        const expectedBody = client.global.get('note_text')
+        client.assert(response.body === expectedBody, `Expected body "${expectedBody}" but was "${response.body}"`);
+    });
+ %}
+
+### Read and delete note
+DELETE {{base_url}}/api/v1/notes/{{note_key}}
+
+> {%
+    client.test('Note deleted', function() {
+        client.assert(response.status === 200, `Expected response status 200 but got ${response.status}`);
+        const expectedBody = client.global.get('note_text')
+        client.assert(response.body === expectedBody, `Expected body "${expectedBody}" but was "${response.body}"`);
+    });
+ %}
+
+### Peek gone note
+GET {{base_url}}/api/v1/notes/{{note_key}}
+
+> {%
+    client.test('Peek gone note', function() {
+        client.assert(response.status === 410, `Expected response status 410 but got ${response.status}`);
+    });
+ %}
+
+### Delete gone note
+DELETE {{base_url}}/api/v1/notes/{{note_key}}
+
+> {%
+    client.test('Delete gone note', function() {
+        client.assert(response.status === 410, `Expected response status 410 but got ${response.status}`);
+    });
+ %}

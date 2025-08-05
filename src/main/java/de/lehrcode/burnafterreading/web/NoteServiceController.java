@@ -28,7 +28,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RestController
 @RequiredArgsConstructor
 public class NoteServiceController {
-    private final String TEXT_PLAIN_UTF8 = "text/plain;charset=UTF-8";
+    public static final String TEXT_PLAIN_UTF8 = "text/plain;charset=UTF-8";
     private final NoteService noteService;
 
     @Operation(summary = "createNote", description = "Create and store a new note")

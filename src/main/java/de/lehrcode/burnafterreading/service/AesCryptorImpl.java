@@ -1,17 +1,16 @@
 package de.lehrcode.burnafterreading.service;
 
+import de.lehrcode.burnafterreading.util.stereotype.MagicDevice;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import org.springframework.stereotype.Component;
 
-@Component
+@MagicDevice
 public class AesCryptorImpl implements Cryptor {
     private static final String ALGORITHM_AES = "AES";
 
