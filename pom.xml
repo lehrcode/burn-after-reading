@@ -165,6 +165,12 @@
                         </goals>
                     </execution>
                     <execution>
+                        <id>process-aot</id>
+                        <goals>
+                            <goal>process-aot</goal>
+                        </goals>
+                    </execution>
+                    <execution>
                         <id>start-it</id>
                         <phase>pre-integration-test</phase>
                         <goals>
